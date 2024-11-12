@@ -5,6 +5,8 @@ class LeafletMap {
         this.map = L.map(containerId).setView(center, zoom);
         // Initialize the tile layer for the map
         this.initTileLayer();
+        // Display lat/long on map click
+        this.displayLatLong();
     }
 
     // Method to initialize the tile layer using OpenStreetMap tiles
@@ -37,11 +39,28 @@ class LeafletMap {
             })
             .catch(error => console.error('Error loading markers:', error)); // Log any errors that occur
     }
+
+    // Method to display latitude and longitude on click
+    displayLatLong() {
+        this.map.on('click', (e) => {
+            // Get the latitude and longitude of the clicked location
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+
+            // Create a tooltip with the lat/long information
+            const tooltip = L.tooltip({
+                permanent: false,
+                direction: 'top'
+            })
+                .setLatLng([lat, lng]) // Position the tooltip at the clicked location
+                .setContent(`Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`) // Display the lat/lng with 5 decimal places
+                .addTo(this.map); // Add the tooltip to the map
+        });
+    }
 }
 
 // Create an instance of LeafletMap with specified container ID, center coordinates, and zoom level
 const myMap = new LeafletMap('map', [8.360004, 124.868419], 18);
-
 
 // Load markers from an external JSON file
 myMap.loadMarkersFromJson('pins.json');
